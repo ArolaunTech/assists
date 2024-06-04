@@ -1,2 +1,2 @@
 assists: main.cpp
-	g++ main.cpp -o assists -I include -L lib glad.c -lglfw
+	g++ main.cpp -o binaries/assists -I include -L lib glad.c -lglfw

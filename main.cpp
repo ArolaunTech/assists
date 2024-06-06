@@ -11,15 +11,21 @@ void window_resize_callback(GLFWwindow* window, int width, int height) {
 	WINDOW_HEIGHT = height;
 }
 
+void error_callback(int error, const char* description) {
+	std::cout << "Error code: " << error << ", Description: " << description << "\n";
+}
+
 int main() {
 	GLFWwindow* window;
 
 	if (!glfwInit())
 		return -1;
 
+	glfwSetErrorCallback(error_callback);
+
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
 	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "init window", NULL, NULL);
 	if (!window) {

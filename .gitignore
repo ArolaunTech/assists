@@ -6,3 +6,6 @@ assists.app/
 cmake_install.cmake
 CMakeFiles/
 libglad.a
+assists
+Makefile
+

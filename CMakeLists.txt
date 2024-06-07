@@ -15,6 +15,6 @@ target_include_directories(glad PUBLIC "include/")
 
 add_subdirectory("glfw-3.4/")
 
-add_executable(assists WIN32 MACOSX_BUNDLE src/main.cpp)
+add_executable(assists src/main.cpp)
 
-target_link_libraries(assists glad glfw)
+target_link_libraries(assists glad glfw ${GLFW_LIBRARIES})

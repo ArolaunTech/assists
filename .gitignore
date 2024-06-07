@@ -1,2 +1,7 @@
 .DS_Store
 binaries/
+makefile
+CMakeCache.txt
+assists.app/
+cmake_install.cmake
+CMakeFiles/

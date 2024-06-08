@@ -14,7 +14,14 @@ add_library(glad
 target_include_directories(glad PUBLIC "include/")
 
 add_subdirectory("glfw-3.4/")
+include_directories("glfw-3.4/include/")
 
-add_executable(assists src/main.cpp)
+IF (WIN32)
+	set(CMAKE_EXE_LINKER_FLAGS "-static")
+ENDIF()
 
-target_link_libraries(assists glad glfw ${GLFW_LIBRARIES})
+add_executable(assists WIN32 MACOSX_BUNDLE src/main.cpp)
+add_executable(assistsdev src/main.cpp)
+
+target_link_libraries(assists glad glfw)
+target_link_libraries(assistsdev glad glfw)

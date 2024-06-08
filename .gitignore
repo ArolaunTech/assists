@@ -11,4 +11,4 @@ Makefile
 opengl32.dll
 assists.exe
 assistsdev.exe
-
+assistsdev

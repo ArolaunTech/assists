@@ -19,6 +19,7 @@ int main() {
 	GLFWwindow* window;
 
 	if (!glfwInit())
+		std::cout << "Failed to initialize GLFW.\n";
 		return -1;
 
 	glfwSetErrorCallback(error_callback);
@@ -40,6 +41,8 @@ int main() {
     	std::cout << "Failed to initialize GLAD\n";
     	return -1;
 	}
+
+	std::cout << "Successful window creation.\n";
 
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, window_resize_callback);

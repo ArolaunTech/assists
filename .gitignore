@@ -1,6 +1,4 @@
 .DS_Store
-binaries/
-makefile
 CMakeCache.txt
 assists.app/
 cmake_install.cmake
@@ -10,5 +8,4 @@ assists
 Makefile
 opengl32.dll
 assists.exe
-assistsdev.exe
-assistsdev
+glfw-3.4/src/libglfw3.a

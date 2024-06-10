@@ -22,8 +22,27 @@ IF (WIN32)
 	set(CMAKE_EXE_LINKER_FLAGS "-static")
 ENDIF()
 
-add_executable(assists WIN32 MACOSX_BUNDLE src/main.cpp)
-add_executable(assistsdev src/main.cpp)
+IF (APPLE)
+	set(MACOSX_BUNDLE_ICON_FILE logo.icns)
+	set_source_files_properties(logo/logo.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
-target_link_libraries(assists glad glfw)
-target_link_libraries(assistsdev glad glfw)
+	add_executable(assists MACOSX_BUNDLE src/main.cpp logo/logo.icns)
+	add_executable(assistsdev src/main.cpp logo/logo.icns)
+
+	target_link_libraries(assists glad glfw)
+	target_link_libraries(assistsdev glad glfw)
+
+
+ELSEIF (WIN32)
+	add_executable(assists WIN32 src/main.cpp)
+	add_executable(assistsdev src/main.cpp)
+
+	target_link_libraries(assists glad glfw)
+	target_link_libraries(assistsdev glad glfw)
+
+
+ELSE ()
+	add_executable(assists src/main.cpp)
+	
+	target_link_libraries(assists glad glfw)
+ENDIF()

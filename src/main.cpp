@@ -18,9 +18,10 @@ void error_callback(int error, const char* description) {
 int main() {
 	GLFWwindow* window;
 
-	if (!glfwInit())
+	if (!glfwInit()) {
 		std::cout << "Failed to initialize GLFW.\n";
 		return -1;
+	}
 
 	glfwSetErrorCallback(error_callback);
 

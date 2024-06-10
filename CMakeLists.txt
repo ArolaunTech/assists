@@ -34,8 +34,8 @@ IF (APPLE)
 
 
 ELSEIF (WIN32)
-	add_executable(assists WIN32 src/main.cpp)
-	add_executable(assistsdev src/main.cpp)
+	add_executable(assists WIN32 src/main.cpp logo/logo.o)
+	add_executable(assistsdev src/main.cpp logo/logo.o)
 
 	target_link_libraries(assists glad glfw)
 	target_link_libraries(assistsdev glad glfw)

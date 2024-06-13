@@ -1,6 +1,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+//#include "../../imgui-1.90.8/imgui.h"
+//#include "../../imgui-1.90.8/backends/imgui_impl_glfw.h"
+//#include "../../imgui-1.90.8/backends/imgui_impl_opengl3.h"
+
 #include <iostream>
+
+#include "render/render.h"
 
 int WINDOW_WIDTH = 640;
 int WINDOW_HEIGHT = 480;
@@ -16,6 +25,7 @@ void error_callback(int error, const char* description) {
 }
 
 int main() {
+	//initialization
 	GLFWwindow* window;
 
 	if (!glfwInit()) {
@@ -29,7 +39,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
-	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "init window", NULL, NULL);
+	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "assists", NULL, NULL);
 	if (!window) {
 		std::cout << "Failed to create GLFW window.\n";
 		glfwTerminate();
@@ -43,23 +53,32 @@ int main() {
     	return -1;
 	}
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init();
+
 	std::cout << "Successful window creation.\n";
 
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, window_resize_callback);
 
+	//main loop
 	while(!glfwWindowShouldClose(window))
 	{
-		//input
-
-		//render
-		glClearColor(0.2, 0.2, 0.3, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-
 		//call events
     	glfwSwapBuffers(window);
-    	glfwPollEvents();    
+    	glfwPollEvents();
+
+    	render();
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 	return 0;

@@ -14,3 +14,4 @@ imgui-temp/
 cross/
 build_universal.sh
 imgui-1.90.8/misc/fonts/
+imgui.ini

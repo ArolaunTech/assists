@@ -58,7 +58,6 @@ ENDIF()
 IF (APPLE)
 	set(MACOSX_BUNDLE_ICON_FILE logo.icns)
 	set_source_files_properties(logo/logo.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-	set_source_files_properties(src/fonts/Poppins/Poppins-Regular.ttf PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 	add_executable(assists MACOSX_BUNDLE ${ASSISTS_SOURCES} logo/logo.icns)
 
@@ -66,7 +65,7 @@ IF (APPLE)
 
 
 ELSEIF (WIN32)
-	add_executable(assists WIN32 ${ASSISTS_SOURCES} logo/logo.txt)
+	add_executable(assists WIN32 ${ASSISTS_SOURCES} logo/logo.o)
 
 	target_link_libraries(assists glad glfw imgui)
 

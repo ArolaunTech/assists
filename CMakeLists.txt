@@ -10,6 +10,11 @@ project(assists
 
 set(CMAKE_CXX_STANDARD 11)
 
+set(ASSISTS_SOURCES
+	src/main.cpp
+	src/render/render.cpp
+)
+
 add_library(glad
 	STATIC
 	"include/glad/glad.h"
@@ -55,19 +60,19 @@ IF (APPLE)
 	set_source_files_properties(logo/logo.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 	set_source_files_properties(src/fonts/Poppins/Poppins-Regular.ttf PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
-	add_executable(assists MACOSX_BUNDLE src/main.cpp src/render/render.cpp logo/logo.icns)
+	add_executable(assists MACOSX_BUNDLE ${ASSISTS_SOURCES} logo/logo.icns)
 
 	target_link_libraries(assists glad glfw imgui)
 
 
 ELSEIF (WIN32)
-	add_executable(assists WIN32 src/main.cpp src/render/render.cpp logo/logo.txt)
+	add_executable(assists WIN32 ${ASSISTS_SOURCES} logo/logo.txt)
 
 	target_link_libraries(assists glad glfw imgui)
 
 
 ELSE ()
-	add_executable(assists src/main.cpp src/render/render.cpp)
+	add_executable(assists ${ASSISTS_SOURCES})
 	
 	target_link_libraries(assists glad glfw imgui)
 ENDIF()

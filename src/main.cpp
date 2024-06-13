@@ -3,13 +3,11 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-//#include "../../imgui-1.90.8/imgui.h"
-//#include "../../imgui-1.90.8/backends/imgui_impl_glfw.h"
-//#include "../../imgui-1.90.8/backends/imgui_impl_opengl3.h"
 
 #include <iostream>
 
 #include "render/render.h"
+#include "fonts/poppinsRegular.h"
 
 int WINDOW_WIDTH = 640;
 int WINDOW_HEIGHT = 480;
@@ -18,6 +16,10 @@ void window_resize_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 	WINDOW_WIDTH = width;
 	WINDOW_HEIGHT = height;
+
+	ImGuiIO& io = ImGui::GetIO();
+	render(io);
+	glfwSwapBuffers(window);
 }
 
 void error_callback(int error, const char* description) {
@@ -56,7 +58,11 @@ int main() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_IsSRGB;
+
+	ImFont* poppins_regular = io.Fonts->AddFontFromMemoryCompressedBase85TTF(poppinsRegular_compressed_data_base85, 24.0f);
+	io.Fonts->Build();
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
@@ -69,11 +75,10 @@ int main() {
 	//main loop
 	while(!glfwWindowShouldClose(window))
 	{
-		//call events
-    	glfwSwapBuffers(window);
     	glfwPollEvents();
 
-    	render();
+    	render(io);
+    	glfwSwapBuffers(window);
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();

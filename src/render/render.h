@@ -1,1 +1,1 @@
-void render();
+void render(ImGuiIO& io);

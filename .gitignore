@@ -11,7 +11,5 @@ assists.exe
 glfw-3.4/src/libglfw3.a
 libimgui.a
 imgui-temp/
-cross/
-build_universal.sh
 imgui-1.90.8/misc/fonts/
 imgui.ini

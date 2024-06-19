@@ -60,7 +60,6 @@ int main() {
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_IsSRGB;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	ImFont* poppins_regular = io.Fonts->AddFontFromMemoryCompressedBase85TTF(poppinsRegular_compressed_data_base85, 24.0f);
 	io.Fonts->Build();

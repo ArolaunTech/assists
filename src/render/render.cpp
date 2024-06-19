@@ -16,11 +16,11 @@ void render(ImGuiIO& io) {
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
 		//ImGui::PushFont(poppins_regular);
 
-		ImGui::SetNextWindowPos(ImVec2(0.0, 0.0));
+		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
 		ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
 
 		ImGui::Begin(
-			"Hello World!",
+			"main",
 			nullptr,
 			ImGuiWindowFlags_NoInputs | 
 			ImGuiWindowFlags_NoBackground |
@@ -31,6 +31,11 @@ void render(ImGuiIO& io) {
 		ImGui::PopStyleColor();
 		//ImGui::PopFont();
 	}
+	{
+		ImGui::Begin("Hello World!");
+		ImGui::Text("Test text");
+		ImGui::End();
+	}
 
 	ImGui::Render();
 
@@ -38,4 +43,11 @@ void render(ImGuiIO& io) {
 	glClearColor(0.9, 0.9, 1.0, 1.0);
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        GLFWwindow* backup = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup);
+    }
 }

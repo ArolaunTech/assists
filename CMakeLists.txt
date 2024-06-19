@@ -27,29 +27,29 @@ include_directories("glfw-3.4/include/")
 
 add_library(imgui
 	STATIC
-	"imgui-1.90.8/imgui.cpp"
-	"imgui-1.90.8/imgui_widgets.cpp"
-	"imgui-1.90.8/imgui_tables.cpp"
-	"imgui-1.90.8/imgui_draw.cpp"
-	"imgui-1.90.8/imgui_demo.cpp"
+	"imgui-docking/imgui.cpp"
+	"imgui-docking/imgui_widgets.cpp"
+	"imgui-docking/imgui_tables.cpp"
+	"imgui-docking/imgui_draw.cpp"
+	"imgui-docking/imgui_demo.cpp"
 
-	"imgui-1.90.8/backends/imgui_impl_glfw.cpp"
-	"imgui-1.90.8/backends/imgui_impl_opengl3.cpp"
+	"imgui-docking/backends/imgui_impl_glfw.cpp"
+	"imgui-docking/backends/imgui_impl_opengl3.cpp"
 
-	"imgui-1.90.8/misc/cpp/imgui_stdlib.cpp"
+	"imgui-docking/misc/cpp/imgui_stdlib.cpp"
 
-	"imgui-1.90.8/imconfig.h"
-	"imgui-1.90.8/imgui_internal.h"
-	"imgui-1.90.8/imgui.h"
-	"imgui-1.90.8/imstb_rectpack.h"
-	"imgui-1.90.8/imstb_textedit.h"
-	"imgui-1.90.8/imstb_truetype.h"
+	"imgui-docking/imconfig.h"
+	"imgui-docking/imgui_internal.h"
+	"imgui-docking/imgui.h"
+	"imgui-docking/imstb_rectpack.h"
+	"imgui-docking/imstb_textedit.h"
+	"imgui-docking/imstb_truetype.h"
 
-	"imgui-1.90.8/backends/imgui_impl_glfw.h"
-	"imgui-1.90.8/backends/imgui_impl_opengl3.h"
+	"imgui-docking/backends/imgui_impl_glfw.h"
+	"imgui-docking/backends/imgui_impl_opengl3.h"
 
-	"imgui-1.90.8/misc/cpp/imgui_stdlib.h")
-target_include_directories(imgui PUBLIC "imgui-1.90.8/")
+	"imgui-docking/misc/cpp/imgui_stdlib.h")
+target_include_directories(imgui PUBLIC "imgui-docking/")
 
 IF (WIN32)
 	set(CMAKE_EXE_LINKER_FLAGS "-static")

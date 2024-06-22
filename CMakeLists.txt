@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.25)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum MacOS version" FORCE)
 set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "6.1.7600.16385" CACHE STRING "Minimum Windows Version: Windows 7" FORCE)
@@ -22,8 +22,15 @@ add_library(glad
 	"src/glad.c")
 target_include_directories(glad PUBLIC "include/")
 
-add_subdirectory("glfw-3.4/")
-include_directories("glfw-3.4/include/")
+if (LINUX)
+	#Compatibility mode: glfw 3.4 does not work on older Linux systems so use
+	#version 3.3 instead.
+	add_subdirectory("glfw-3.3/")
+	include_directories("glfw-3.3/include/")
+ELSE ()
+	add_subdirectory("glfw-3.4/")
+	include_directories("glfw-3.4/include/")
+ENDIF()
 
 add_library(imgui
 	STATIC

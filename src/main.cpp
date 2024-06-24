@@ -61,7 +61,7 @@ int main() {
 	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_IsSRGB;
 
-	ImFont* poppins_regular = io.Fonts->AddFontFromMemoryCompressedBase85TTF(poppinsRegular_compressed_data_base85, 24.0f);
+	ImFont* poppins_regular = io.Fonts->AddFontFromMemoryCompressedBase85TTF(poppinsRegular_compressed_data_base85, 18.0f);
 	io.Fonts->Build();
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);

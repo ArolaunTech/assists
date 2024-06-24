@@ -15,26 +15,43 @@ void render(ImGuiIO& io) {
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
 		//ImGui::PushFont(poppins_regular);
-
 		ImGui::SetNextWindowPos(ImVec2(0.0, 0.0));
 		ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
 
 		ImGui::Begin(
 			"main",
 			nullptr,
-			ImGuiWindowFlags_NoInputs | 
+			ImGuiWindowFlags_NoMove | //NoInputs flag does not work due to needing to select menu
+			ImGuiWindowFlags_NoBringToFrontOnFocus | 
 			ImGuiWindowFlags_NoBackground |
-			ImGuiWindowFlags_NoDecoration);
+			ImGuiWindowFlags_NoDecoration |
+			ImGuiWindowFlags_MenuBar);
+
 		ImGui::Text("Testing text");
-		ImGui::End();
 
 		ImGui::PopStyleColor();
+
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu("Test")) {
+				if (ImGui::MenuItem("t1")) {
+
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+
+		ImGui::End();
+		//ImGui::PopStyleColor();
 		//ImGui::PopFont();
 	}
 	{
 		ImGui::Begin("Hello World!");
 		ImGui::Text("Test text");
 		ImGui::End();
+	}
+	{
+		ImGui::ShowDemoWindow();
 	}
 
 	ImGui::Render();

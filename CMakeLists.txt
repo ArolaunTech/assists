@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(ASSISTS_SOURCES
 	src/main.cpp
+	src/app.cpp
 	src/render/render.cpp
 )
 

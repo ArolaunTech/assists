@@ -4,9 +4,15 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 
-#include "render.h"
+#include "../app.h"
 
-void render(ImGuiIO& io) {
+void Application::idle() {
+	glfwWaitEventsTimeout(1.0/this->idleFPS);
+}
+
+void Application::render() {
+	ImGuiIO& io = ImGui::GetIO();
+
 	ImGui_ImplGlfw_NewFrame();
 	ImGui_ImplOpenGL3_NewFrame();
 
@@ -27,14 +33,13 @@ void render(ImGuiIO& io) {
 			ImGuiWindowFlags_NoDecoration |
 			ImGuiWindowFlags_MenuBar);
 
-		ImGui::Text("Testing text");
+		ImGui::Text("Try selecting a tool from the \"Tools\" section to use it.");
 
 		ImGui::PopStyleColor();
 
 		if (ImGui::BeginMenuBar()) {
-			if (ImGui::BeginMenu("Test")) {
-				if (ImGui::MenuItem("t1")) {
-
+			if (ImGui::BeginMenu("Tools")) {
+				if (ImGui::MenuItem("Transfer Window Planner")) {
 				}
 				ImGui::EndMenu();
 			}
@@ -49,9 +54,6 @@ void render(ImGuiIO& io) {
 		ImGui::Begin("Hello World!");
 		ImGui::Text("Test text");
 		ImGui::End();
-	}
-	{
-		ImGui::ShowDemoWindow();
 	}
 
 	ImGui::Render();

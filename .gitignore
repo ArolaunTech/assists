@@ -11,4 +11,7 @@ assists.exe
 glfw-3.4/src/libglfw3.a
 libimgui.a
 imgui-temp/
+imgui-docking/
+glfw-3.3/
+glfw-3.4/
 imgui.ini

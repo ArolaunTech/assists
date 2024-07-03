@@ -14,6 +14,7 @@ set(ASSISTS_SOURCES
 	src/main.cpp
 	src/app.cpp
 	src/render/render.cpp
+	src/debug/debug.cpp
 )
 
 add_library(glad

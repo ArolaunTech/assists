@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "app.h"
+#include "debug/debug.h"
 
 #include "fonts/poppinsRegular.h"
 
@@ -25,9 +26,9 @@ void error_callback(int error, const char* description) {
 	std::cout << "Error code: " << error << ", Description: " << description << "\n";
 }
 
-Application::Application(): width(640), height(480), idleFPS(30.0), err(0) {
+Application::Application(): width(640), height(480), idleFPS(30.0), err(0), currentWindow(0) {
 	if (!glfwInit()) {
-		std::cout << "Failed to initialize GLFW.\n";
+		log("Failed to initialize GLFW.");
 		this->err = -1;
 		return;
 	}
@@ -40,7 +41,7 @@ Application::Application(): width(640), height(480), idleFPS(30.0), err(0) {
 	
 	this->window = glfwCreateWindow(this->width, this->height, "assists", NULL, NULL);
 	if (!this->window) {
-		std::cout << "Failed to create GLFW window.\n";
+		log("Failed to create GLFW window.");
 		glfwTerminate();
 		this->err = -1;
 		return;
@@ -49,7 +50,7 @@ Application::Application(): width(640), height(480), idleFPS(30.0), err(0) {
 	glfwMakeContextCurrent(this->window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    	std::cout << "Failed to initialize GLAD\n";
+    	log("Failed to initialize GLAD");
     	glfwTerminate();
 		this->err = -1;
     	return;
@@ -68,7 +69,7 @@ Application::Application(): width(640), height(480), idleFPS(30.0), err(0) {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	std::cout << "Successful window creation.\n";
+	log("Successful window creation.");
 	current_app = this;
 
 	glViewport(0, 0, this->width, this->height);

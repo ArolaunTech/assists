@@ -4,6 +4,7 @@ public:
 	int width;
 	int height;
 	int err;
+	int currentWindow;
 
 	GLFWwindow* window;
 

@@ -33,13 +33,24 @@ void Application::render() {
 			ImGuiWindowFlags_NoDecoration |
 			ImGuiWindowFlags_MenuBar);
 
-		ImGui::Text("Try selecting a tool from the \"Tools\" section to use it.");
+		switch (this->currentWindow) {
+			case 0:
+				ImGui::Text("Try selecting a tool from the \"Tools\" section to use it.");
+				break;
+			case 1:
+				ImGui::Text("Transfer Window Planner\n----------------------");
+				break;
+			default:
+				ImGui::Text("An error has ocurred. Oh no!");
+				break;
+		}
 
 		ImGui::PopStyleColor();
 
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("Tools")) {
 				if (ImGui::MenuItem("Transfer Window Planner")) {
+					this->currentWindow = 1;
 				}
 				ImGui::EndMenu();
 			}

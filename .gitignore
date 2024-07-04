@@ -14,4 +14,6 @@ imgui-temp/
 imgui-docking/
 glfw-3.3/
 glfw-3.4/
+include/
+src/glad.c
 imgui.ini

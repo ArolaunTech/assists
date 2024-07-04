@@ -24,15 +24,10 @@ add_library(glad
 	"src/glad.c")
 target_include_directories(glad PUBLIC "include/")
 
-if (LINUX)
-	#Compatibility mode: glfw 3.4 does not work on older Linux systems so use
-	#version 3.3 instead.
-	add_subdirectory("glfw-3.3/")
-	include_directories("glfw-3.3/include/")
-ELSE ()
-	add_subdirectory("glfw-3.4/")
-	include_directories("glfw-3.4/include/")
-ENDIF()
+#Compatibility: glfw 3.4 does not work on older Linux systems so use
+#version 3.3 instead.
+add_subdirectory("glfw-3.3/")
+include_directories("glfw-3.3/include/")
 
 add_library(imgui
 	STATIC

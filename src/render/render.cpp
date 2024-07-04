@@ -6,6 +6,8 @@
 
 #include "../app.h"
 
+//#include "meshes/planet.h"
+
 void Application::idle() {
 	glfwWaitEventsTimeout(1.0/this->idleFPS);
 }
@@ -39,6 +41,12 @@ void Application::render() {
 				break;
 			case 1:
 				ImGui::Text("Transfer Window Planner\n----------------------");
+				ImGui::Image(
+					(ImTextureID)this->planetColorBuffer,
+					ImGui::GetContentRegionAvail(),
+					ImVec2(0, 1),
+					ImVec2(1, 0)
+				);
 				break;
 			default:
 				ImGui::Text("An error has ocurred. Oh no!");
@@ -61,16 +69,22 @@ void Application::render() {
 		//ImGui::PopStyleColor();
 		//ImGui::PopFont();
 	}
-	{
-		ImGui::Begin("Hello World!");
-		ImGui::Text("Test text");
-		ImGui::End();
-	}
 
 	ImGui::Render();
 
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
+
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
+	glUseProgram(this->planetShader);
+	glBindVertexArray(this->vao);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0.9, 0.9, 0.9, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(0.9, 0.9, 1.0, 1.0);
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

@@ -8,10 +8,6 @@ private:
 
 	unsigned int planetShader;
 
-	void init_glfw();
-	void init_glad();
-	void init_imgui();
-
 	void generate_buffers();
 	unsigned int compile_and_link_shaders(char const * vertexShaderSource, char const * fragmentShaderSource);
 public:

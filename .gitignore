@@ -16,4 +16,5 @@ glfw-3.3/
 glfw-3.4/
 include/
 src/glad.c
+*.py
 imgui.ini

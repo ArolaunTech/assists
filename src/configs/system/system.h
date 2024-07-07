@@ -1,0 +1,20 @@
+#ifndef STOCK_SYSTEM_H
+#define STOCK_SYSTEM_H
+#include "Bop.h"
+#include "Dres.h"
+#include "Duna.h"
+#include "Eeloo.h"
+#include "Eve.h"
+#include "Gilly.h"
+#include "Ike.h"
+#include "Jool.h"
+#include "Kerbin.h"
+#include "Laythe.h"
+#include "Minmus.h"
+#include "Moho.h"
+#include "Mun.h"
+#include "Pol.h"
+#include "Sun.h"
+#include "Tylo.h"
+#include "Vall.h"
+#endif

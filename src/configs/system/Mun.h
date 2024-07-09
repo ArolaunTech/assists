@@ -1,6 +1,7 @@
+#include <string>
 #ifndef MUN_H
 #define MUN_H
-char const *Mun_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Mun_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

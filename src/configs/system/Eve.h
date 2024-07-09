@@ -1,6 +1,7 @@
+#include <string>
 #ifndef EVE_H
 #define EVE_H
-char const *Eve_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Eve_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

@@ -1,6 +1,7 @@
+#include <string>
 #ifndef DRES_H
 #define DRES_H
-char const *Dres_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Dres_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

@@ -1,3 +1,6 @@
+#include <vector>
+#include "configs/parser.h"
+
 class Application {
 private:
 	unsigned int fbo;
@@ -8,6 +11,8 @@ private:
 
 	unsigned int planetShader;
 
+	bool showDebug;
+
 	void generate_buffers();
 	unsigned int compile_and_link_shaders(char const * vertexShaderSource, char const * fragmentShaderSource);
 public:
@@ -16,6 +21,8 @@ public:
 	int height;
 	int err;
 	int currentWindow;
+
+	std::vector<Body> system;
 
 	GLFWwindow* window;
 

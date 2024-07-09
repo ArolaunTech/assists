@@ -1,6 +1,7 @@
+#include <string>
 #ifndef VALL_H
 #define VALL_H
-char const *Vall_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Vall_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

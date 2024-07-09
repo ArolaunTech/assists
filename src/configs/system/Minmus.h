@@ -1,6 +1,7 @@
+#include <string>
 #ifndef MINMUS_H
 #define MINMUS_H
-char const *Minmus_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Minmus_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

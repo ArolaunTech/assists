@@ -1,5 +1,6 @@
 #include <iostream>
+#include <string>
 
-void log(char const * message) {
+void log(std::string message) {
 	std::cout << message << "\n";
 }

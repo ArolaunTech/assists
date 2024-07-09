@@ -1,6 +1,7 @@
+#include <string>
 #ifndef LAYTHE_H
 #define LAYTHE_H
-char const *Laythe_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Laythe_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

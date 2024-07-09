@@ -1,6 +1,7 @@
+#include <string>
 #ifndef BOP_H
 #define BOP_H
-char const *Bop_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Bop_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

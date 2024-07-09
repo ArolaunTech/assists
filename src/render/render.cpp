@@ -170,6 +170,11 @@ void Application::render() {
 		//ImGui::PopStyleColor();
 		//ImGui::PopFont();
 	}
+	if (this->showDebug) {
+		ImGui::Begin("Debug console");
+		ImGui::Text("");
+		ImGui::End();
+	}
 
 	ImGui::Render();
 

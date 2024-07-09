@@ -1,6 +1,7 @@
+#include <string>
 #ifndef EELOO_H
 #define EELOO_H
-char const *Eeloo_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Eeloo_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

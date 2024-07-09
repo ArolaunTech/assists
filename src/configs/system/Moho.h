@@ -1,6 +1,7 @@
+#include <string>
 #ifndef MOHO_H
 #define MOHO_H
-char const *Moho_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Moho_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

@@ -1,6 +1,7 @@
+#include <string>
 #ifndef KERBIN_H
 #define KERBIN_H
-char const *Kerbin_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Kerbin_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

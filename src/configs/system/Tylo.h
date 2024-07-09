@@ -1,6 +1,7 @@
+#include <string>
 #ifndef TYLO_H
 #define TYLO_H
-char const *Tylo_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Tylo_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

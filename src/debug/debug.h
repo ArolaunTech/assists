@@ -1,1 +1,3 @@
-void log(char const * message);
+#include <string>
+
+void log(std::string message);

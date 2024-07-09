@@ -17,4 +17,7 @@ glfw-3.4/
 include/
 src/glad.c
 *.py
+src/configs/parser_test
+src/configs/parser_test.cpp
+src/configs/CMakeLists.txt
 imgui.ini

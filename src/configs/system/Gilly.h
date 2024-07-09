@@ -1,6 +1,7 @@
+#include <string>
 #ifndef GILLY_H
 #define GILLY_H
-char const *Gilly_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Gilly_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

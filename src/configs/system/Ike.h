@@ -1,6 +1,7 @@
+#include <string>
 #ifndef IKE_H
 #define IKE_H
-char const *Ike_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Ike_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

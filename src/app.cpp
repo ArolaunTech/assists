@@ -9,6 +9,7 @@
 
 #include "app.h"
 #include "debug/debug.h"
+#include "configs/parser.h"
 
 #include "fonts/poppinsRegular.h"
 #include "render/shaders/planetVertex.h"
@@ -85,6 +86,7 @@ Application::Application(): width(640), height(480), idleFPS(30.0), err(0), curr
 	}
 
 	this->planetShader = compile_and_link_shaders(planetVertexShaderCode, planetFragmentShaderCode);
+	this->system = loadStockBodies();
 }
 
 Application::~Application() {

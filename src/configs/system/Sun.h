@@ -1,6 +1,7 @@
+#include <string>
 #ifndef SUN_H
 #define SUN_H
-char const *Sun_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Sun_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

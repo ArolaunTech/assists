@@ -1,6 +1,7 @@
+#include <string>
 #ifndef JOOL_H
 #define JOOL_H
-char const *Jool_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Jool_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

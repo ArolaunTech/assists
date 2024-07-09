@@ -4,17 +4,18 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum MacOS version" FORC
 set(VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "6.1.7600.16385" CACHE STRING "Minimum Windows Version: Windows 7" FORCE)
 
 project(assists
-	VERSION 0.0.1
+	VERSION 0.0.2
 	DESCRIPTION "Space trajectory optimizer"
 	LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 set(ASSISTS_SOURCES
 	src/main.cpp
 	src/app.cpp
 	src/render/render.cpp
 	src/debug/debug.cpp
+	src/configs/parser.cpp
 )
 
 add_library(glad

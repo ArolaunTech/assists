@@ -1,6 +1,7 @@
+#include <string>
 #ifndef DUNA_H
 #define DUNA_H
-char const *Duna_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
+std::string Duna_cfg = "// KittopiaTech - a Kopernicus Visual Editor\n"
 "\n"
 "@Kopernicus:NEEDS[!Kopernicus]\n"
 "{\n"

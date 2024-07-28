@@ -2,8 +2,9 @@
 #include <vector>
 #include <string>
 #include <stack>
-#include <iostream>
+//#include <iostream>
 #include <cmath>
+#include <unordered_map>
 
 #include "../debug/debug.h"
 #include "system/system.h"
@@ -181,6 +182,20 @@ ConfigTree removeNodesFromConfigTree(const ConfigTree tree, std::vector<std::str
 	return res;
 }
 
+ConfigTree findConfigTreeNode(const ConfigTree tree, std::string name) {
+	if (tree.name == name) {
+		return tree;
+	}
+	for (ConfigTree child : tree.children) {
+		ConfigTree childRes = findConfigTreeNode(child, name);
+		if (childRes.name == name) {
+			return childRes;
+		}
+	}
+	ConfigTree res;
+	return res;
+}
+
 std::vector<std::string> getValueFromConfigTree(const ConfigTree& tree, std::string key) {
 	for (Statement statement : tree.statements) {
 		if (statement.key == key) {
@@ -202,10 +217,12 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 	std::vector<std::string> searchResult = getValueFromConfigTree(tree, "name");
 	if (searchResult.size() == 0) {
 		log("No name detected in config");
+		return res;
 	} else {
 		res.name = searchResult[0];
 	}
 
+	//Find mass and radius
 	bool massFound = false;
 	bool radiusFound = false;
 
@@ -235,18 +252,210 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 
 	if ((!massFound) || (!radiusFound)) {
 		searchResult = getValueFromConfigTree(tree, "geeASL");
-		if (!massFound) {
-			res.gravParameter = g * std::stod(searchResult[0]) * res.radius * res.radius;
-		} else {
-			res.radius = std::sqrt(res.gravParameter/(g * std::stod(searchResult[0])));
+		if (searchResult.size() > 0) {
+			if (!massFound) {
+				res.gravParameter = g * std::stod(searchResult[0]) * res.radius * res.radius;
+			} else {
+				res.radius = std::sqrt(res.gravParameter/(g * std::stod(searchResult[0])));
+			}
 		}
+	}
+
+	if (!massFound) {
+		log("Mass not specified");
+		return res;
+	}
+
+	if (!radiusFound) {
+		log("Radius not specified");
+		return res;
+	}
+
+	//Find orbital parameters and color
+	searchResult = getValueFromConfigTree(tree, "referenceBody");
+	if (searchResult.size() > 0) {
+		Orbit orbit;
+		res.orbit = orbit;
+		res.orbit.referenceBody = searchResult[0];
+	} else {
+		if (res.name == "Sun") {
+			res.color[0] = 1.0; //Random color I found in Kittopia Dumps
+			res.color[1] = 0.863;
+			res.color[2] = 0.584;
+		} else {
+			log("No orbital parent specified");
+		}
+		return res;
+	}
+
+	searchResult = getValueFromConfigTree(tree, "semiMajorAxis");
+	if (searchResult.size() > 0) {
+		res.orbit.sma = std::stod(searchResult[0]);
+	} else {
+		log("No semi major axis specified for orbit");
+		return res;
+	}
+
+	searchResult = getValueFromConfigTree(tree, "eccentricity");
+	if (searchResult.size() > 0) {
+		res.orbit.eccentricity = std::stod(searchResult[0]);
+	} else {
+		log("No eccentricity specified");
+		return res;
+	}
+
+	searchResult = getValueFromConfigTree(tree, "inclination");
+	if (searchResult.size() > 0) {
+		res.orbit.inclination = std::stod(searchResult[0]);
+	} else {
+		log("No inclination specified");
+		return res;
+	}
+
+	searchResult = getValueFromConfigTree(tree, "longitudeOfAscendingNode");
+	if (searchResult.size() > 0) {
+		res.orbit.lan = std::stod(searchResult[0]);
+	} else {
+		log("No longitude of ascending node specified");
+		return res;
+	}
+
+	searchResult = getValueFromConfigTree(tree, "argumentOfPeriapsis");
+	if (searchResult.size() > 0) {
+		res.orbit.argp = std::stod(searchResult[0]);
+	} else {
+		log("No argument of periapsis specified");
+		return res;
+	}
+
+	searchResult = getValueFromConfigTree(tree, "period");
+	res.orbit.period = -1.0;
+	if (searchResult.size() > 0) {
+		res.orbit.period = std::stod(searchResult[0]);
+	}
+
+	double meanAnomalyAtEpoch = 0.0;
+
+	searchResult = getValueFromConfigTree(tree, "meanAnomalyAtEpoch");
+	if (searchResult.size() > 0) {
+		meanAnomalyAtEpoch = std::stod(searchResult[0]);
+	} else {
+		searchResult = getValueFromConfigTree(tree, "meanAnomalyAtEpochD");
+		if (searchResult.size() > 0) {
+			meanAnomalyAtEpoch = std::stod(searchResult[0]) * pi/180.0;
+		}
+	}
+
+	res.orbit.meanAnomalyAtEpoch = meanAnomalyAtEpoch;
+
+	searchResult = getValueFromConfigTree(tree, "epoch");
+	if (searchResult.size() > 0) {
+		res.orbit.epoch = std::stod(searchResult[0]);
+	}
+
+	//Color
+	searchResult = getValueFromConfigTree(findConfigTreeNode(tree, "Orbit"), "color");
+	if (searchResult.size() > 0) {
+		//Detect color type
+		if (searchResult[0].rfind("RGBA(", 0) == 0) {
+			if (searchResult[0].size() == 5) {
+				res.color[0] = std::stod(searchResult[1])/255.0;
+				res.color[1] = std::stod(searchResult[2])/255.0;
+				res.color[2] = std::stod(searchResult[3])/255.0;
+			} else {
+				res.color[0] = std::stod(searchResult[0].substr(5))/255.0;
+				res.color[1] = std::stod(searchResult[1])/255.0;
+				res.color[2] = std::stod(searchResult[2])/255.0;
+			}
+			//log("RGBA color");
+		} else if (searchResult[0].rfind("RGB(", 0) == 0) {
+			if (searchResult[0].size() == 4) {
+				res.color[0] = std::stod(searchResult[1])/255.0;
+				res.color[1] = std::stod(searchResult[2])/255.0;
+
+				int blueSize = searchResult[3].size();
+				if (searchResult[3][blueSize - 1] == ')') {
+					res.color[2] = std::stod(searchResult[3].substr(0, blueSize - 1))/255.0;
+				} else {
+					res.color[2] = std::stod(searchResult[3])/255.0;
+				}
+			} else {
+				res.color[0] = std::stod(searchResult[0].substr(4))/255.0;
+				res.color[1] = std::stod(searchResult[1])/255.0;
+
+				int blueSize = searchResult[2].size();
+				if (searchResult[2][blueSize - 1] == ')') {
+					res.color[2] = std::stod(searchResult[2].substr(0, blueSize - 1))/255.0;
+				} else {
+					res.color[2] = std::stod(searchResult[2])/255.0;
+				}
+			}
+			//log("RGB color");
+		} else if (searchResult[0].rfind("HSBA(", 0) == 0) {
+			//log("HSBA color");
+			double h, s, b;
+
+			if (searchResult[0].size() == 5) {
+				h = 360.0*std::stod(searchResult[1])/255.0; //Kopernicus, why???
+				s = std::stod(searchResult[2])/255.0;
+				b = std::stod(searchResult[3])/255.0;
+			} else {
+				h = 360.0*std::stod(searchResult[0].substr(5))/255.0;
+				s = std::stod(searchResult[1])/255.0;
+				b = std::stod(searchResult[2])/255.0;
+			}
+
+			//Line-by-line copy of Kopernicus's HSBA parser
+			double max = b;
+			double dif = b * s;
+			double min = b - dif;
+
+			if (h < 60.0) {
+				res.color[0] = max;
+				res.color[1] = h * dif/60.0 + min;
+				res.color[2] = min;
+			} else if (h < 120.0) {
+				res.color[0] = -(h - 120.0) * dif/60.0 + min;
+				res.color[1] = max;
+				res.color[2] = min;
+			} else if (h < 180.0) {
+				res.color[0] = min;
+				res.color[1] = max;
+				res.color[2] = (h - 120.0) * dif/60.0 + min;
+			} else if (h < 240.0) {
+				res.color[0] = min;
+				res.color[1] = -(h - 240.0) * dif/60.0 + min;
+				res.color[2] = max;
+			} else if (h < 300.0) {
+				res.color[0] = (h - 240.0) * dif/60.0 + min;
+				res.color[1] = min;
+				res.color[2] = max;
+			} else {
+				res.color[0] = max;
+				res.color[1] = min;
+				res.color[2] = -(h - 360.0) * dif/60.0 + min;
+			}
+		} else if (searchResult[0].rfind("XKCD.", 0) == 0) {
+			log("XKCD color is not supported right now because I'm too lazy to make it");
+		} else if (searchResult[0][0] == '#') {
+			res.color[0] = (double)std::stoi("0x" + searchResult[0].substr(1, 2))/255.0;
+			res.color[1] = (double)std::stoi("0x" + searchResult[0].substr(3, 2))/255.0;
+			res.color[2] = (double)std::stoi("0x" + searchResult[0].substr(5, 2))/255.0;
+		} else {
+			res.color[0] = std::stod(searchResult[0]);
+			res.color[1] = std::stod(searchResult[1]);
+			res.color[2] = std::stod(searchResult[2]);
+		}
+	} else {
+		log("No orbit color provided");
+		return res;
 	}
 
 	return res;
 }
 
-std::vector<Body> loadStockBodies() {
-	std::vector<Body> res;
+std::unordered_map<std::string, Body> loadStockBodies() {
+	std::unordered_map<std::string, Body> res;
 	for (const std::string* config : stockSystem) {
 		ConfigTree bodyTree = removeNodesFromConfigTree(
 			getConfigTreeFromConfig(*config),
@@ -262,11 +471,30 @@ std::vector<Body> loadStockBodies() {
 			}
 		);
 		Body body = getBodyFromConfigTree(bodyTree);
-		res.push_back(body);
+		res[body.name] = body;
 		//logConfigTree(bodyTree);
 		//log(body.name);
 		//std::cout << body.gravParameter << "\n";
 		//std::cout << body.radius << "\n";
+		//std::cout << body.color[0]*255.0 << "\n";
+		//std::cout << body.color[1]*255.0 << "\n";
+		//std::cout << body.color[2]*255.0 << "\n";
 	}
+	for (auto& iter : res) {
+		if (iter.second.orbit.period == -1.0) {
+			if (iter.second.orbit.sma < 0.0) {
+				iter.second.orbit.period = INFINITY;
+			} else {
+				iter.second.orbit.period = 
+					2.0 * pi * iter.second.orbit.sma * 
+					std::sqrt(
+						iter.second.orbit.sma / 
+						res[iter.second.orbit.referenceBody].gravParameter
+					);
+			}
+		}
+		//std::cout << res[iter.first].orbit.period << "\n";
+	}
+
 	return res;
 }

@@ -1,14 +1,18 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 
 #include <cstdint>
+#include <vector>
 
 #include "../app.h"
+#include "ui.h"
 #include "../debug/debug.h"
 #include "meshes/planet.h"
+#include "meshes/sphere.h"
 
 void Application::set_framebuffer_size(int bufferWidth, int bufferHeight) {
 	glBindTexture(GL_TEXTURE_2D, this->planetColorBuffer);
@@ -46,14 +50,14 @@ void Application::generate_buffers() {
 	glGenBuffers(1, &this->vbo);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planetMesh), planetMesh, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(sphereMesh), sphereMesh, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glGenVertexArrays(1, &this->vao);
 
 	glBindVertexArray(this->vao);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planetMesh), planetMesh, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(sphereMesh), sphereMesh, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(uintptr_t)0);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
@@ -118,63 +122,104 @@ void Application::render() {
 
 	ImGui_ImplGlfw_NewFrame();
 	ImGui_ImplOpenGL3_NewFrame();
-
     ImGui::NewFrame();
 
-	{
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
-		//ImGui::PushFont(poppins_regular);
-		ImGui::SetNextWindowPos(ImVec2(0.0, 0.0));
-		ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
+    ImGuiWindowClass notitlebar;
+    notitlebar.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
 
-		ImGui::Begin(
-			"main",
-			nullptr,
-			ImGuiWindowFlags_NoMove | //NoInputs flag does not work due to needing to select menu
-			ImGuiWindowFlags_NoBringToFrontOnFocus | 
-			ImGuiWindowFlags_NoBackground |
-			ImGuiWindowFlags_NoDecoration |
-			ImGuiWindowFlags_MenuBar);
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-		switch (this->currentWindow) {
-			case 0:
-				ImGui::Text("Try selecting a tool from the \"Tools\" section to use it.");
-				break;
-			case 1:
-				ImGui::Text("Transfer Window Planner\n----------------------");
-				ImGui::Image(
-					(void*)(uintptr_t)this->planetColorBuffer,
-					ImGui::GetContentRegionAvail(),
-					ImVec2(0, 1),
-					ImVec2(1, 0)
-				);
-				break;
-			default:
-				ImGui::Text("An error has ocurred. Oh no!");
-				break;
-		}
+	/*=============================================================*/
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
 
-		ImGui::PopStyleColor();
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+	ImGui::SetNextWindowSize(viewport->WorkSize);
 
-		if (ImGui::BeginMenuBar()) {
-			if (ImGui::BeginMenu("Tools")) {
-				if (ImGui::MenuItem("Transfer Window Planner")) {
-					this->currentWindow = 1;
-				}
-				ImGui::EndMenu();
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0, 0.0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0);
+
+	ImGui::Begin(
+		"main",
+		nullptr,
+		ImGuiWindowFlags_NoMove | //NoInputs flag does not work due to needing to select menu
+		ImGuiWindowFlags_NoBringToFrontOnFocus | 
+		ImGuiWindowFlags_NoBackground |
+		ImGuiWindowFlags_NoDecoration |
+		ImGuiWindowFlags_MenuBar |
+		ImGuiWindowFlags_NoDocking
+	);
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0,0,0,0));
+	ImGuiID dockspaceID = ImGui::GetID("mainDockspace");
+	ImGui::DockSpace(dockspaceID, ImVec2(0.0, 0.0), ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoResize);
+	
+	ImGui::PopStyleColor();
+	ImGui::PopStyleVar(3);
+
+	ImGui::PopStyleColor();
+
+	if (ImGui::BeginMenuBar()) {
+		if (ImGui::BeginMenu("Tools")) {
+			if (ImGui::MenuItem("Transfer Window Planner")) {
+				this->currentWindow = 1;
 			}
-			ImGui::EndMenuBar();
+			ImGui::EndMenu();
 		}
-
-		ImGui::End();
-		//ImGui::PopStyleColor();
-		//ImGui::PopFont();
+		ImGui::EndMenuBar();
 	}
+
+	ImGui::End();
+	/*=============================================================*/
+	ImGui::SetNextWindowClass(&notitlebar);
+	ImGui::Begin("start", nullptr, ImGuiWindowFlags_NoTitleBar);
+
+	switch (this->currentWindow) {
+		case 0:
+			ImGui::TextWrapped("Try selecting a tool from the \"Tools\" section to use it.");
+			break;
+		case 1:
+			ImGui::TextWrapped("Transfer Window Planner\n----------------------");
+			ImGui::Image(
+				(void*)(uintptr_t)this->planetColorBuffer,
+				ImGui::GetContentRegionAvail(),
+				ImVec2(0, 1),
+				ImVec2(1, 0)
+			);
+			break;
+		default:
+			ImGui::Text("An error has ocurred. Oh no!");
+			break;
+	}
+	ImGui::End();
+	/*=============================================================*/
+	ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDocking);
+	ImGui::Text("Test 3");
+	ImGui::End();
+	/*=============================================================*/
 	if (this->showDebug) {
 		ImGui::Begin("Debug console");
 		ImGui::Text("");
 		ImGui::End();
 	}
+	/*=============================================================*/
+
+	ImGui::DockBuilderRemoveNodeChildNodes(dockspaceID);
+
+	UILayout layout = this->layouts[this->currentWindow];
+	std::vector<ImGuiID> nodes;
+	nodes.push_back(dockspaceID);
+
+	for (Partition part : layout.partitions) {
+		ImGuiID newNode = ImGui::DockBuilderSplitNode(nodes[part.index], part.direction, part.fraction, nullptr, &newNode);
+		nodes.push_back(newNode);
+	}
+
+	//ImGuiID leftNode = ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.5, nullptr, &leftNode);
+
+	ImGui::DockBuilderDockWindow("start", nodes[layout.windowIndices[0]]);
+
+	ImGui::DockBuilderFinish(dockspaceID);
 
 	ImGui::Render();
 
@@ -186,7 +231,7 @@ void Application::render() {
 
 	glUseProgram(this->planetShader);
 	glBindVertexArray(this->vao);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, sizeof(sphereMesh)/sizeof(float));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0.9, 0.9, 0.9, 1.0);

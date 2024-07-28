@@ -8,7 +8,7 @@ project(assists
 	DESCRIPTION "Space trajectory optimizer"
 	LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 
 set(ASSISTS_SOURCES
 	src/main.cpp
@@ -16,6 +16,7 @@ set(ASSISTS_SOURCES
 	src/render/render.cpp
 	src/debug/debug.cpp
 	src/configs/parser.cpp
+	src/render/ui.cpp
 )
 
 add_library(glad

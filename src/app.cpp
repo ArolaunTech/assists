@@ -66,7 +66,8 @@ Application::Application(): width(640), height(480), idleFPS(30.0), err(0), curr
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags = 
 		ImGuiConfigFlags_NavEnableKeyboard |
-		ImGuiConfigFlags_IsSRGB;
+		ImGuiConfigFlags_IsSRGB |
+		ImGuiConfigFlags_DockingEnable;
 
 	ImFont* poppins_regular = io.Fonts->AddFontFromMemoryCompressedBase85TTF(poppinsRegular_compressed_data_base85, 18.0f);
 	io.Fonts->Build();
@@ -87,6 +88,8 @@ Application::Application(): width(640), height(480), idleFPS(30.0), err(0), curr
 
 	this->planetShader = compile_and_link_shaders(planetVertexShaderCode, planetFragmentShaderCode);
 	this->system = loadStockBodies();
+
+	this->initialize_ui_layouts();
 }
 
 Application::~Application() {

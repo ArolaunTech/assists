@@ -1,5 +1,10 @@
+#include <unordered_map>
 #include <vector>
+
+#include <GLFW/glfw3.h>
+
 #include "configs/parser.h"
+#include "render/ui.h"
 
 class Application {
 private:
@@ -13,8 +18,12 @@ private:
 
 	bool showDebug;
 
+	std::vector<UILayout> layouts;
+
 	void generate_buffers();
 	unsigned int compile_and_link_shaders(char const * vertexShaderSource, char const * fragmentShaderSource);
+
+	void initialize_ui_layouts();
 public:
 	double idleFPS;
 	int width;
@@ -22,7 +31,7 @@ public:
 	int err;
 	int currentWindow;
 
-	std::vector<Body> system;
+	std::unordered_map<std::string, Body> system;
 
 	GLFWwindow* window;
 

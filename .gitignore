@@ -20,4 +20,7 @@ src/glad.c
 src/configs/parser_test
 src/configs/parser_test.cpp
 src/configs/CMakeLists.txt
+kittopia-dumps-master/
 imgui.ini
+illPaths
+designs/

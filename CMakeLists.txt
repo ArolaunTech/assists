@@ -17,6 +17,9 @@ set(ASSISTS_SOURCES
 	src/debug/debug.cpp
 	src/configs/parser.cpp
 	src/render/ui.cpp
+	src/engine/motion.cpp
+	src/debug/perft.cpp
+	src/engine/types.cpp
 )
 
 add_library(glad

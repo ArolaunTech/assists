@@ -15,6 +15,7 @@ struct Orbit {
 	double epoch;
 
 	double period;
+	double parentGravParameter;
 
 	std::string referenceBody;
 };

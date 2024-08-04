@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <string>
 
 #include "../app.h"
 #include "ui.h"
@@ -129,9 +130,13 @@ void Application::render() {
 
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-	/*=============================================================*/
-	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
+    UILayout layout = this->layouts[this->currentWindow];
+	std::vector<ImGuiID> nodes;
+	std::vector<char const *> windowNames;
 
+	double planetTime = 0.0;
+
+	/*=============================================================*/
 	ImGui::SetNextWindowPos(viewport->WorkPos);
 	ImGui::SetNextWindowSize(viewport->WorkSize);
 
@@ -154,7 +159,6 @@ void Application::render() {
 	ImGuiID dockspaceID = ImGui::GetID("mainDockspace");
 	ImGui::DockSpace(dockspaceID, ImVec2(0.0, 0.0), ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoResize);
 	
-	ImGui::PopStyleColor();
 	ImGui::PopStyleVar(3);
 
 	ImGui::PopStyleColor();
@@ -170,59 +174,77 @@ void Application::render() {
 	}
 
 	ImGui::End();
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
+	/*=============================================================*/
+	windowNames.push_back("input");
+	if (layout.windowIndices[0] != -1) {
+		ImGui::SetNextWindowClass(&notitlebar);
+		ImGui::SetNextWindowBgAlpha(0.0);
+		ImGui::Begin("input", nullptr, ImGuiWindowFlags_NoTitleBar);
+
+		switch (this->currentWindow) {
+			case 0:
+				ImGui::TextWrapped("Try selecting a tool from the \"Tools\" section to use it.");
+				break;
+			case 1:
+				ImGui::TextWrapped("Transfer Window Planner\n----------------------");
+				break;
+			default:
+				ImGui::TextWrapped(
+					"%s", getErrorMessage(90 + 100*this->currentWindow).c_str()
+				);
+				break;
+		}
+		ImGui::End();
+	}
 	/*=============================================================*/
 	ImGui::SetNextWindowClass(&notitlebar);
-	ImGui::Begin("start", nullptr, ImGuiWindowFlags_NoTitleBar);
+	ImGui::SetNextWindowBgAlpha(0.0);
+	ImGui::Begin("planets", nullptr, ImGuiWindowFlags_NoTitleBar);
 
-	switch (this->currentWindow) {
-		case 0:
-			ImGui::TextWrapped("Try selecting a tool from the \"Tools\" section to use it.");
-			break;
-		case 1:
-			ImGui::TextWrapped("Transfer Window Planner\n----------------------");
-			ImGui::Image(
-				(void*)(uintptr_t)this->planetColorBuffer,
-				ImGui::GetContentRegionAvail(),
-				ImVec2(0, 1),
-				ImVec2(1, 0)
-			);
-			break;
-		default:
-			ImGui::Text("An error has ocurred. Oh no!");
-			break;
-	}
+	ImGui::Image(
+		(void*)(uintptr_t)this->planetColorBuffer,
+		ImGui::GetContentRegionAvail(),
+		ImVec2(0, 1),
+		ImVec2(1, 0)
+	);
+
 	ImGui::End();
 	/*=============================================================*/
-	ImGui::Begin("Test", nullptr, ImGuiWindowFlags_NoDocking);
-	ImGui::Text("Test 3");
-	ImGui::End();
+	ImGui::ShowDemoWindow();
 	/*=============================================================*/
-	if (this->showDebug) {
+	ImGui::PopStyleColor();
+	/*if (this->showDebug) {
 		ImGui::Begin("Debug console");
 		ImGui::Text("");
 		ImGui::End();
-	}
+	}*/
 	/*=============================================================*/
 
 	ImGui::DockBuilderRemoveNodeChildNodes(dockspaceID);
 
-	UILayout layout = this->layouts[this->currentWindow];
-	std::vector<ImGuiID> nodes;
 	nodes.push_back(dockspaceID);
 
 	for (Partition part : layout.partitions) {
-		ImGuiID newNode = ImGui::DockBuilderSplitNode(nodes[part.index], part.direction, part.fraction, nullptr, &newNode);
+		ImGuiID newNode = ImGui::DockBuilderSplitNode(nodes[part.index], part.direction, part.fraction, &newNode, &(nodes[part.index]));
 		nodes.push_back(newNode);
 	}
 
-	//ImGuiID leftNode = ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.5, nullptr, &leftNode);
-
-	ImGui::DockBuilderDockWindow("start", nodes[layout.windowIndices[0]]);
+	const std::size_t windowNameSize = windowNames.size();
+	const std::size_t windowIndexSize = layout.windowIndices.size();
+	for (std::size_t i = 0; i < windowNameSize; i++) {
+		if (i >= windowIndexSize) {
+			break;
+		}
+		if (layout.windowIndices[i] != -1) {
+			ImGui::DockBuilderDockWindow(windowNames[i], nodes[layout.windowIndices[i]]);
+		}
+	}
 
 	ImGui::DockBuilderFinish(dockspaceID);
-
 	ImGui::Render();
 
+	//Framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -234,6 +256,8 @@ void Application::render() {
 	glDrawArrays(GL_TRIANGLES, 0, sizeof(sphereMesh)/sizeof(float));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//Render
 	glClearColor(0.9, 0.9, 0.9, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 

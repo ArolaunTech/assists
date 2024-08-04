@@ -2,14 +2,15 @@
 #include <vector>
 #include <string>
 #include <stack>
-//#include <iostream>
+#include <iostream>
 #include <cmath>
 #include <unordered_map>
 
 #include "../debug/debug.h"
+#include "../debug/perft.h"
 #include "system/system.h"
 #include "parser.h"
-#include "../constants/consts.h"
+#include "../engine/consts.h"
 
 //Planet config reader
 struct Statement {
@@ -57,6 +58,9 @@ void logConfigTree(ConfigTree tree) {
 }
 
 ConfigTree getConfigTreeFromConfig(const std::string& config) {
+	//PerftAnalyzer perft;
+	//TagID start = perft.tagTime();
+
 	std::vector<std::string> words;
 	std::string currentWord = "";
 	char previousCharacter = ' ';
@@ -101,6 +105,9 @@ ConfigTree getConfigTreeFromConfig(const std::string& config) {
 	if (currentWord.size() > 0) {
 		words.push_back(currentWord);
 	}
+
+	//std::cout << perft.elapsed(start).count() << "\n";
+	//TagID end = perft.tagTime();
 
 	ConfigTree root; //Turn words vector into a ConfigTree 
 	ConfigTree* current = &root;
@@ -159,12 +166,18 @@ ConfigTree getConfigTreeFromConfig(const std::string& config) {
 	}
 	//logConfigTree(root);
 
+	//std::cout << perft.elapsed(start).count() << "\n";
+
 	return root;
 }
 
-ConfigTree removeNodesFromConfigTree(const ConfigTree tree, std::vector<std::string> names) {
-	ConfigTree res = tree;
-	res.children.clear();
+ConfigTree removeNodesFromConfigTree(const ConfigTree& tree, std::vector<std::string> names) {
+	//PerftAnalyzer perft;
+	//TagID start = perft.tagTime();
+
+	ConfigTree res{nullptr, tree.name, std::vector<ConfigTree>{}, tree.statements};
+	//res.children.clear();
+	//res.statements = tree.statements;
 	bool childInNames;
 	for (ConfigTree child : tree.children) {
 		childInNames = false;
@@ -174,15 +187,16 @@ ConfigTree removeNodesFromConfigTree(const ConfigTree tree, std::vector<std::str
 				break;
 			}
 		}
-		if (childInNames) {
-			continue;
+		if (!childInNames) {
+			res.children.push_back(removeNodesFromConfigTree(child, names));
 		}
-		res.children.push_back(removeNodesFromConfigTree(child, names));
 	}
+
+	//std::cout << perft.elapsed(start).count() << "\n";
 	return res;
 }
 
-ConfigTree findConfigTreeNode(const ConfigTree tree, std::string name) {
+ConfigTree findConfigTreeNode(const ConfigTree& tree, std::string name) {
 	if (tree.name == name) {
 		return tree;
 	}
@@ -212,9 +226,35 @@ std::vector<std::string> getValueFromConfigTree(const ConfigTree& tree, std::str
 	return std::vector<std::string>{}; //Not found
 }
 
+std::unordered_map<std::string, std::vector<std::string> > flattenTree(const ConfigTree& tree) {
+	std::unordered_map<std::string, std::vector<std::string> > res;
+
+	for (Statement statement : tree.statements) {
+		res[statement.key] = statement.values;
+	}
+	for (ConfigTree child : tree.children) {
+		std::unordered_map<std::string, std::vector<std::string> > childResult = flattenTree(child);
+		for (auto pair : childResult) {
+			res[pair.first] = pair.second;
+		}
+	}
+
+	return res;
+}
+
+std::vector<std::string> getValueFromFlattenedTree(std::unordered_map<std::string, std::vector<std::string> >& tree, std::string key) {
+	if (tree.find(key) == tree.end()) {
+		return std::vector<std::string>{};
+	}
+	return tree[key];
+}
+
 Body getBodyFromConfigTree(const ConfigTree& tree) {
 	Body res;
-	std::vector<std::string> searchResult = getValueFromConfigTree(tree, "name");
+
+	std::unordered_map<std::string, std::vector<std::string> > flattenedTree = flattenTree(tree);
+
+	std::vector<std::string> searchResult = getValueFromFlattenedTree(flattenedTree, "name");
 	if (searchResult.size() == 0) {
 		log("No name detected in config");
 		return res;
@@ -226,20 +266,20 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 	bool massFound = false;
 	bool radiusFound = false;
 
-	searchResult = getValueFromConfigTree(tree, "gravParameter");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "gravParameter");
 	if (searchResult.size() > 0) {
 		res.gravParameter = std::stod(searchResult[0]);
 		massFound = true;
 	}
 	if (!massFound) {
-		searchResult = getValueFromConfigTree(tree, "mass");
+		searchResult = getValueFromFlattenedTree(flattenedTree, "mass");
 		if (searchResult.size() > 0) {
 			res.gravParameter = G * std::stod(searchResult[0]);
 			massFound = true;
 		}
 	}
 
-	searchResult = getValueFromConfigTree(tree, "radius");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "radius");
 	if (searchResult.size() > 0) {
 		res.radius = std::stod(searchResult[0]);
 		radiusFound = true;
@@ -251,7 +291,7 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 	}
 
 	if ((!massFound) || (!radiusFound)) {
-		searchResult = getValueFromConfigTree(tree, "geeASL");
+		searchResult = getValueFromFlattenedTree(flattenedTree, "geeASL");
 		if (searchResult.size() > 0) {
 			if (!massFound) {
 				res.gravParameter = g * std::stod(searchResult[0]) * res.radius * res.radius;
@@ -272,7 +312,7 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 	}
 
 	//Find orbital parameters and color
-	searchResult = getValueFromConfigTree(tree, "referenceBody");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "referenceBody");
 	if (searchResult.size() > 0) {
 		Orbit orbit;
 		res.orbit = orbit;
@@ -288,7 +328,7 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 		return res;
 	}
 
-	searchResult = getValueFromConfigTree(tree, "semiMajorAxis");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "semiMajorAxis");
 	if (searchResult.size() > 0) {
 		res.orbit.sma = std::stod(searchResult[0]);
 	} else {
@@ -296,7 +336,7 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 		return res;
 	}
 
-	searchResult = getValueFromConfigTree(tree, "eccentricity");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "eccentricity");
 	if (searchResult.size() > 0) {
 		res.orbit.eccentricity = std::stod(searchResult[0]);
 	} else {
@@ -304,31 +344,31 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 		return res;
 	}
 
-	searchResult = getValueFromConfigTree(tree, "inclination");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "inclination");
 	if (searchResult.size() > 0) {
-		res.orbit.inclination = std::stod(searchResult[0]);
+		res.orbit.inclination = std::stod(searchResult[0]) * pi/180.0;
 	} else {
 		log("No inclination specified");
 		return res;
 	}
 
-	searchResult = getValueFromConfigTree(tree, "longitudeOfAscendingNode");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "longitudeOfAscendingNode");
 	if (searchResult.size() > 0) {
-		res.orbit.lan = std::stod(searchResult[0]);
+		res.orbit.lan = std::stod(searchResult[0]) * pi/180.0;
 	} else {
 		log("No longitude of ascending node specified");
 		return res;
 	}
 
-	searchResult = getValueFromConfigTree(tree, "argumentOfPeriapsis");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "argumentOfPeriapsis");
 	if (searchResult.size() > 0) {
-		res.orbit.argp = std::stod(searchResult[0]);
+		res.orbit.argp = std::stod(searchResult[0]) * pi/180.0;
 	} else {
 		log("No argument of periapsis specified");
 		return res;
 	}
 
-	searchResult = getValueFromConfigTree(tree, "period");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "period");
 	res.orbit.period = -1.0;
 	if (searchResult.size() > 0) {
 		res.orbit.period = std::stod(searchResult[0]);
@@ -336,11 +376,11 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 
 	double meanAnomalyAtEpoch = 0.0;
 
-	searchResult = getValueFromConfigTree(tree, "meanAnomalyAtEpoch");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "meanAnomalyAtEpoch");
 	if (searchResult.size() > 0) {
 		meanAnomalyAtEpoch = std::stod(searchResult[0]);
 	} else {
-		searchResult = getValueFromConfigTree(tree, "meanAnomalyAtEpochD");
+		searchResult = getValueFromFlattenedTree(flattenedTree, "meanAnomalyAtEpochD");
 		if (searchResult.size() > 0) {
 			meanAnomalyAtEpoch = std::stod(searchResult[0]) * pi/180.0;
 		}
@@ -348,7 +388,8 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 
 	res.orbit.meanAnomalyAtEpoch = meanAnomalyAtEpoch;
 
-	searchResult = getValueFromConfigTree(tree, "epoch");
+	searchResult = getValueFromFlattenedTree(flattenedTree, "epoch");
+	res.orbit.epoch = 0.0;
 	if (searchResult.size() > 0) {
 		res.orbit.epoch = std::stod(searchResult[0]);
 	}
@@ -455,8 +496,12 @@ Body getBodyFromConfigTree(const ConfigTree& tree) {
 }
 
 std::unordered_map<std::string, Body> loadStockBodies() {
+	//PerftAnalyzer perft;
+
 	std::unordered_map<std::string, Body> res;
 	for (const std::string* config : stockSystem) {
+		//TagID startparse = perft.tagTime();
+
 		ConfigTree bodyTree = removeNodesFromConfigTree(
 			getConfigTreeFromConfig(*config),
 			std::vector<std::string> {
@@ -470,15 +515,19 @@ std::unordered_map<std::string, Body> loadStockBodies() {
 				"AtmosphereFromGround"
 			}
 		);
+
+		//std::cout << perft.elapsed(startparse).count() << "\n";
+		//TagID endparse = perft.tagTime();
+
 		Body body = getBodyFromConfigTree(bodyTree);
 		res[body.name] = body;
+		
+		//std::cout << perft.elapsed(endparse).count() << "\n";
 		//logConfigTree(bodyTree);
 		//log(body.name);
 		//std::cout << body.gravParameter << "\n";
 		//std::cout << body.radius << "\n";
-		//std::cout << body.color[0]*255.0 << "\n";
-		//std::cout << body.color[1]*255.0 << "\n";
-		//std::cout << body.color[2]*255.0 << "\n";
+		//std::cout << body.color[0]*255.0 << " " << body.color[1]*255.0 << " " << body.color[2]*255.0 << "\n";
 	}
 	for (auto& iter : res) {
 		if (iter.second.orbit.period == -1.0) {
@@ -493,6 +542,10 @@ std::unordered_map<std::string, Body> loadStockBodies() {
 					);
 			}
 		}
+		if (iter.first == "Sun") {
+			continue;
+		}
+		iter.second.orbit.parentGravParameter = res[iter.second.orbit.referenceBody].gravParameter;
 		//std::cout << res[iter.first].orbit.period << "\n";
 	}
 

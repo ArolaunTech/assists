@@ -1,6 +1,7 @@
 #include <unordered_map>
 #include <string>
 #include <iostream>
+#include <cmath>
 
 #include "motion.h"
 #include "types.h"
